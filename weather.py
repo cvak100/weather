@@ -146,18 +146,39 @@ def extract_weather_data(location):
             day, month, year = match.groups()
             formatted_date = f"{year}-{month}-{day}"  # Convert to YYYY-MM-DD format
 
-            # Append temperature data to calculate min/max/avg
-            temperature_value = float(temperature_elements[i].get_text(strip=True).replace(",", "."))
+            # Extract and handle missing data
+            try:
+                temperature_value = float(temperature_elements[i].get_text(strip=True).replace(",", "."))
+            except (IndexError, ValueError, AttributeError):
+                temperature_value = 0  # Default to 0 if missing
+
+            try:
+                humidity_value = int(humidity_elements[i].get_text(strip=True))
+            except (IndexError, ValueError, AttributeError):
+                humidity_value = 0  # Default to 0 if missing
+
+            try:
+                precipitation_value = float(precipitation_elements[i].get_text(strip=True).replace(",", "."))
+            except (IndexError, ValueError, AttributeError):
+                precipitation_value = 0  # Default to 0 if missing
+
+            try:
+                total_precipitation_value = float(
+                    total_precipitation_elements[i].get_text(strip=True).replace(",", "."))
+            except (IndexError, ValueError, AttributeError):
+                total_precipitation_value = 0  # Default to 0 if missing
+
+            try:
+                snow_depth_value = float(snow_elements[i].get_text(strip=True).replace(",", "."))
+            except (IndexError, ValueError, AttributeError):
+                snow_depth_value = 0  # Default to 0 if missing
+
+            # Store the extracted data
             daily_data[formatted_date]["temperature"].append(temperature_value)
-
-            # Append humidity data to calculate min/max/avg
-            humidity_value = int(humidity_elements[i].get_text(strip=True))
             daily_data[formatted_date]["humidity"].append(humidity_value)
-
-            # Append other weather data
-            daily_data[formatted_date]["precipitation"].append(float(precipitation_elements[i].get_text(strip=True).replace(",", ".")))
-            daily_data[formatted_date]["total_precipitation"].append(float(total_precipitation_elements[i].get_text(strip=True).replace(",", ".")))
-            daily_data[formatted_date]["snow_depth"].append(float(snow_elements[i].get_text(strip=True).replace(",", ".")))
+            daily_data[formatted_date]["precipitation"].append(precipitation_value)
+            daily_data[formatted_date]["total_precipitation"].append(total_precipitation_value)
+            daily_data[formatted_date]["snow_depth"].append(snow_depth_value)
 
     # Fetch sunrise and sunset times
     logging.info(f"Fetching sunrise and sunset data for {location} from {sun_url}")
