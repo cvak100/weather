@@ -145,7 +145,9 @@ def extract_weather_data(location):
         if match:
             day, month, year = match.groups()
             formatted_date = f"{year}-{month}-{day}"  # Convert to YYYY-MM-DD format
-
+            # Skip any data that is not for today
+            if formatted_date != datetime.now().strftime("%Y-%m-%d"):
+                continue
             # Extract and handle missing data
             try:
                 temperature_value = float(temperature_elements[i].get_text(strip=True).replace(",", "."))
