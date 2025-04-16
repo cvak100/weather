@@ -1,4 +1,4 @@
-# 📄 Weather Data Scraper & Database Manager
+# 📄 Weather Data Scraper
 
 This Python script scrapes weather data from public sources and stores it in a SQLite database. It supports real-time and historical weather data extraction, as well as data retrieval.
 
