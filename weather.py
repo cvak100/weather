@@ -76,29 +76,33 @@ def main():
 
 def show_help():
     print("""
-Weather CLI - Examples
+Weather CLI - Usage Examples
 
-Create DB:
-  weather.py init-db
+Initialize Database:
+  python weather.py init-db
 
 Add Location:
-  weather.py add-location Breginj 46.2061 13.4895 341 --info "Mountain area"
+  python weather.py add-location Breginj 46.2630 13.4263 576 --info "Alpine"
 
-Add Provider:
-  weather.py add-provider OpenWeatherMap https://api.openweathermap.org --location-id 1 --notes "Free API"
+Add Providers:
+  python weather.py add-provider TimeAndDate https://www.timeanddate.com/astronomy/@3203471 --location-id 1 --notes "astronomy"
+  python weather.py add-provider TimeAndDate https://www.timeanddate.com/weather/@3203471/historic --location-id 1 --notes "history"
+  python weather.py add-provider Arso https://meteo.arso.gov.si/uploads/probase/www/observ/surface/text/sl/observationAms_BREGINJ_history.html --location-id 1 --notes "arso"
+  python weather.py add-provider TimeAndDate https://www.timeanddate.com/sun/@3203471 --location-id 1 --notes "history"
 
 Scrape Today's Weather:
-  weather.py scrape-today
-  weather.py scrape-today --location-id 1
-  weather.py scrape-today --location-id 1 --date 2024-04-21
+  python weather.py scrape-today
+  python weather.py scrape-today --location-id 1
+  python weather.py scrape-today --location-id 1 --date 2025-03-01
 
 Scrape Historical Weather:
-  weather.py scrape-history --location-id 1 --from 2024-04-01 --to 2024-04-05
+  python weather.py scrape-history --location-id 1 --from 2025-01-01 --to 2025-03-30
 
-Export Data:
-  weather.py export --location-id 1 --from 2024-04-01 --to 2024-04-05
-  weather.py export --location-id 1 --date 2024-04-07 --output output.json
+Export Weather Data:
+  python weather.py export --location-id 1 --date 2025-03-02
+  python weather.py export --location-id 1 --from 2025-03-01 --to 2025-03-07
 """)
+
 
 if __name__ == "__main__":
     main()

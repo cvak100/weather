@@ -1,5 +1,3 @@
-# logic/export.py
-
 import json
 from db import connect
 
@@ -7,9 +5,18 @@ def export_data(args):
     conn = connect()
     cur = conn.cursor()
 
-    # Required
     location_id = args.location_id
 
+    # Get location info
+    cur.execute("SELECT name, notes FROM weather_providers WHERE id = ?", (location_id,))
+    loc = cur.fetchone()
+    if not loc:
+        print(f"❌ Location with ID {location_id} not found.")
+        return
+
+    location_name, location_notes = loc
+
+    # Fetch records
     if args.date:
         cur.execute("""
             SELECT * FROM weather_observed
@@ -27,10 +34,21 @@ def export_data(args):
         return
 
     rows = cur.fetchall()
-    column_names = [description[0] for description in cur.description]
+    column_names = [desc[0] for desc in cur.description]
 
-    data = [dict(zip(column_names, row)) for row in rows]
+    excluded = {"id", "location_id", "data_raw"}
+    keep_columns = [col for col in column_names if col not in excluded]
 
-    print(json.dumps(data, indent=2, ensure_ascii=False))
+    data = [
+        {col: row[idx] for idx, col in enumerate(column_names) if col in keep_columns}
+        for row in rows
+    ]
 
+    output = {
+        "location_name": location_name,
+        "location_notes": location_notes,
+        "records": data
+    }
+
+    print(json.dumps(output, indent=2, ensure_ascii=False))
     conn.close()
