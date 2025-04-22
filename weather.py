@@ -65,7 +65,8 @@ def main():
         scrape.scrape_today(args)
 
     elif args.command == "scrape-history":
-        scrape.scrape_history(args)
+        from logic.scrape import scrape_history
+        scrape_history(args)
 
     elif args.command == "export":
         export.export_data(args)
