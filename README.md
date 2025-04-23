@@ -14,7 +14,7 @@ Automated via cron or Jenkins with backup & export features.
 
 ## Setup
 
-git clone https://github.com/yourname/weather.git
+git clone https://github.com/cvak100/weather.git
 cd weather
 
 # Initialize the database
