@@ -1,67 +1,89 @@
-# 📄 Weather Data Scraper
+# Weather Tracker v1.0
 
-This Python script scrapes weather data from public sources and stores it in a SQLite database. It supports real-time and historical weather data extraction, as well as data retrieval.
+A modular, CLI-based weather data collection system using SQLite.  
+Supports scraping actual & historical weather and astronomy data from ARSO and TimeAndDate.  
+Automated via cron or Jenkins with backup & export features.
 
-## 📌 Features
+## Requirements
 
-✅ **Extract live weather data** for a location and store it in the database.  
-✅ **Extract historical weather data** (monthly or daily) and store it.  
-✅ **Retrieve saved weather data** for a specific date or date range.  
-✅ **Automatic database schema management** (ensures all necessary columns exist).  
+- Python 3.8+
+- pip install -r requirements.txt (BeautifulSoup, requests, etc.)
+- Fedora (or any Linux with bash support)
+- SQLite (default)
+- Optional: Jenkins, cron
 
----
+## Setup
 
-## 🚀 Usage Examples
+git clone https://github.com/yourname/weather.git
+cd weather
 
-### 1️⃣ Initialize the Database
-Before running extractions, ensure the database schema is set up:
-```bash
-python weather.py --create_database
-```
+# Initialize the database
+python weather.py init-db
 
-### 2️⃣ Extract Current Weather Data
-Fetch and store the **latest** weather data for a location:
-```bash
-python weather.py --extract_weather_data Breginj
-```
+## Add Locations
 
-### 3️⃣ Extract Historical Weather Data
+python weather.py add-location Breginj 46.2630 13.4263 576 --info "Alpine"
 
-##### 📌 (a) Extract First Day of Each Month in a Year
-```bash
-python weather.py --extract_historical_weather_data 2024
-```
-##### 📌 (b) Extract All Days for a Specific Month
-```bash
-python weather.py --extract_historical_weather_data 2024 2
-```
-##### 📌 (c) Extract Weather for a Specific Day
-```bash
-python weather.py --extract_historical_weather_data 2024 2 1
-```
+## Add Providers
 
-### 4️⃣ Retrieve Weather Data from the Database
+python weather.py add-provider TimeAndDate https://www.timeanddate.com/astronomy/@3203471 --location-id 1 --notes "astronomy"
 
-##### 📌 (a) Get All Saved Data
-```bash
-python weather.py --get_weather_data
-```
-##### 📌  (b) Get Data for a Specific Day
-```bash
-python weather.py --get_weather_data 2024-02-01 Breginj
-```
-##### 📌 (c) Get Data for a Date Range
-```bash
-python weather.py --get_weather_data 2024-01-01 2024-02-01 Breginj
-```
+python weather.py add-provider TimeAndDate https://www.timeanddate.com/weather/@3203471/historic --location-id 1 --notes "history"
 
----
+python weather.py add-provider Arso https://meteo.arso.gov.si/uploads/probase/www/observ/surface/text/sl/observationAms_BREGINJ_history.html --location-id 1 --notes "arso"
 
-## 🔧 Logs & Debugging
-All logs are saved to weather_scraper.log.
+python weather.py add-provider TimeAndDate https://www.timeanddate.com/sun/@3203471 --location-id 1 --notes "history"
 
-## 🔧 Logs & Debugging
-Data is stored in weather_data.db (SQLite).
-The script auto-creates missing database columns.
-Works for multiple locations (extend LOCATIONS dictionary in the script).
+## Scrape Weather
 
+# Scrape today's data
+python weather.py scrape-today
+
+python weather.py scrape-today --location-id 1
+
+python weather.py scrape-today --location-id 1 --date 2025-04-21
+
+# Scrape historical range
+python weather.py scrape-history --location-id 1 --from 2025-01-01 --to 2025-03-30
+
+## Export Data
+
+python weather.py export --location-id 1 --date 2025-04-21
+
+python weather.py export --location-id 1 --from 2025-03-01 --to 2025-03-07
+
+# Output is pretty JSON and includes location info.
+
+## Automation
+
+# scrape_yesterday.sh
+
+# Cron (every 6h)
+H */6 * * * /opt/weather/scrape_yesterday.sh >> /var/log/weather_scrape.log 2>&1
+
+## Backups
+
+# backup_db.sh
+
+# Cron (daily backup)
+H 0 * * * /opt/weather/backup_db.sh >> /var/log/weather_backup.log 2>&1
+
+## Version
+
+v1.0 – April 2025  
+- Actual & historic scraping  
+- Astronomy data  
+- Unified DB entries  
+- Automation  
+- Export  
+- Backups
+
+## Future Ideas
+
+- Forecast evaluation
+- Chart exports
+- Web dashboard
+- REST API
+ 
+
+Maintained with love, cron, and cloudy skies ☁️
