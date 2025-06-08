@@ -46,6 +46,18 @@ def main():
     parser_export.add_argument("--to", dest="date_to")
     parser_export.add_argument("--output")
 
+    # patch-astronomy
+    parser_patch_astro = subparsers.add_parser("patch-astronomy", help="Patch astronomy fields za zadnje N dni")
+    parser_patch_astro.add_argument("--location-id", type=int, required=True)
+    parser_patch_astro.add_argument("--days", type=int, default=7)
+    parser_patch_astro.add_argument("--base-url", type=str, required=True)  # dodaš še base_url kot argument
+
+    parser_patch_fields = subparsers.add_parser("patch-fields",
+                                                help="Patch only sunrise, sunset, daylight, pressure, wind za obstoječe zapise")
+    parser_patch_fields.add_argument("--location-id", type=int, required=True)
+    parser_patch_fields.add_argument("--from", dest="date_from", required=True)
+    parser_patch_fields.add_argument("--to", dest="date_to", required=True)
+
     # help
     subparsers.add_parser("help", help="Show usage examples")
 
@@ -70,6 +82,26 @@ def main():
 
     elif args.command == "export":
         export.export_data(args)
+
+    elif args.command == "patch-astronomy":
+        from utils import patch_weather_observed
+        from logic.scrape import scrape_timeanddate_astronomy_history
+        from datetime import date, timedelta
+        today = date.today()
+
+        for d in range(1, args.days + 1):
+            target_date = today - timedelta(days=d)
+            date_str = target_date.strftime("%Y-%m-%d")
+            astro = scrape_timeanddate_astronomy_history(date_str, args.base_url)
+            if astro:
+                patch_weather_observed(args.location_id, date_str, astro)
+            else:
+                print(f"⚠️  Ni astronomy podatkov za {date_str}")
+
+    elif args.command == "patch-fields":
+        from logic.patch import patch_selected_fields
+
+        patch_selected_fields(args.location_id, args.date_from, args.date_to)
 
     elif args.command == "help" or args.command is None:
         show_help()
