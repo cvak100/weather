@@ -11,6 +11,6 @@ python weather.py scrape-today --location-id 1 --date "$YESTERDAY"
 
 # DODAJ PATCH za zadnje 3 dni nazaj (ne vključuje danes)
 FROM=$(date -d "3 days ago" +%F)
-TO=$(date -d "yesterday" +%F)
+TO=$(date -d "2 days ago" +%F)
 
 python weather.py patch-fields --location-id 1 --from "$FROM" --to "$TO"
