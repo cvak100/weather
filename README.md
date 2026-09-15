@@ -78,12 +78,4 @@ v1.0 – April 2025
 - Export  
 - Backups
 
-## Future Ideas
 
-- Forecast evaluation
-- Chart exports
-- Web dashboard
-- REST API
- 
-
-Maintained with love, cron, and cloudy skies ☁️
