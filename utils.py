@@ -70,3 +70,44 @@ def save_weather_observed(location_id: int, date: str, data: dict):
 
     conn.commit()
     conn.close()
+
+
+def patch_weather_observed(location_id: int, date: str, patch_data: dict):
+    """
+    Posodobi SAMO izbrane ključev (npr. sunrise, sunset, daylight_minutes) za dan/location.
+    Ostalo naj pusti nedotaknjeno.
+    """
+    conn = connect()
+    cur = conn.cursor()
+
+    # Check če zapis obstaja
+    cur.execute("""
+        SELECT id FROM weather_observed
+        WHERE location_id = ? AND date = ?
+    """, (location_id, date))
+    row = cur.fetchone()
+
+    if not row:
+        print(f"❌ Ne obstaja zapis za location {location_id} na {date} — nič za popravljat.")
+        conn.close()
+        return
+
+    fields_to_update = [k for k, v in patch_data.items() if v is not None]
+    if not fields_to_update:
+        print(f"❌ Ni podatkov za patch za location {location_id} na {date}")
+        conn.close()
+        return
+
+    set_clause = ", ".join([f"{field} = ?" for field in fields_to_update])
+    values = [patch_data[field] for field in fields_to_update]
+
+    cur.execute(f"""
+        UPDATE weather_observed
+        SET {set_clause}
+        WHERE location_id = ? AND date = ?
+    """, values + [location_id, date])
+
+    print(f"🟢 Patchano: {fields_to_update} za location {location_id} na {date}")
+
+    conn.commit()
+    conn.close()
